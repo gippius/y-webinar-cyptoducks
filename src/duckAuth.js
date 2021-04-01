@@ -1,6 +1,6 @@
 export const BASE_URL = 'https://api.nomoreparties.co';
 
-export const register = (username, password, email) => {
+export const register = ({username, password, email}) => {
   return fetch(`${BASE_URL}/auth/local/register`, {
     method: 'POST',
     headers: {

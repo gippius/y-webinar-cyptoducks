@@ -28,9 +28,27 @@ const App = () => {
     }
   }, [loggedIn])
 
-  const handleLogin = () => {
-    setLoggedIn(true);
+  const handleLogin = ({ username, password }) => {
+    return duckAuth.authorize(username, password)
+      .then((data) => {
+        if (!data) throw new Error('Неверные имя пользователя или пароль')
+        if (data.jwt) {
+          setLoggedIn(true)
+          localStorage.setItem('jwt', data.jwt)
+          history.push('/ducks')
+          return;
+        }
+      })
   }
+
+  const handleRegister = ({ username, password, email }) => {
+    console.log({ username, password, email })
+    return duckAuth.register({ username, password, email }).then((res) => {
+      if (!res || res.statusCode === 400) throw new Error('Что-то пошло не так');
+      return res;
+    }).catch()
+  }
+
   const tokenCheck = () => {
     if (localStorage.getItem('jwt')) {
       let jwt = localStorage.getItem('jwt');
@@ -48,12 +66,12 @@ const App = () => {
       <ProtectedRoute path="/my-profile" loggedIn={loggedIn} userData={userData} component={MyProfile} />
       <Route path="/login">
         <div className="loginContainer">
-          <Login handleLogin={handleLogin}/>
+          <Login onLogin={handleLogin} />
         </div>
       </Route>
       <Route path="/register">
         <div className="registerContainer">
-          <Register />
+          <Register onRegister={handleRegister} />
         </div>
       </Route>
       <Route>

@@ -4,7 +4,7 @@ import Logo from './Logo.js';
 import * as duckAuth from '../duckAuth.js';
 import './styles/Register.css';
 
-const Register = () => {
+const Register = ({onRegister}) => {
   const [userData, setUserData] = useState({
     username: '',
     email: '',
@@ -12,7 +12,6 @@ const Register = () => {
     confirmPassword: ''
   })
   const [message, setMessage] = useState()
-  const history = useHistory();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,19 +21,12 @@ const Register = () => {
     });
   }
   const handleSubmit = (e) => {
+    let { username, confirmPassword, password, email } = userData;
     e.preventDefault();
-    if (userData.password === userData.confirmPassword) {
-      let { username, password, email } = userData;
-      duckAuth.register(username, password, email).then((res) => {
-        if (res.statusCode !== 400) {
-          history.push('/login')
-        } else {
-          this.setState({
-            message: 'Что-то пошло не так!'
-          })
-        }
-      });
-    }
+    console.log({ username, password, email })
+    onRegister({ username, password, email }).catch(
+      err => setMessage(err.message || 'Что-то пошло не так')
+    )
   }
   return (
     <div className="register">
@@ -61,7 +53,7 @@ const Register = () => {
         <label htmlFor="confirmPassword">
           Подтвердите пароль:
           </label>
-        <input id="confirmPassword" name="confirmPassword" type="password" value={userData.confirmPassword} onChange={this.handleChange} />
+        <input id="confirmPassword" name="confirmPassword" type="password" value={userData.confirmPassword} onChange={handleChange} />
         <div className="register__button-container">
           <button type="submit" className="register__link">Зарегистрироваться</button>
         </div>

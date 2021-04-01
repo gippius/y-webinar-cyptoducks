@@ -14,27 +14,15 @@ const Login = ({ onLogin }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    this.setState({
+    setUserData({
+      ...userData,
       [name]: value
-    });
+    })
   }
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!this.state.username || !this.state.password) {
-      return;
-    }
-    duckAuth.authorize(this.state.username, this.state.password)
-      .then((data) => {
-        if (!data) {
-          return setMessage({message: 'Что-то пошло не так!'})
-        }
-        if (data.jwt) {
-          onLogin()
-          history.push('/ducks')
-          return;
-        }
-      })
-      .catch(err => console.log(err));
+    onLogin(userData)
+    .catch(err => setMessage(err.message || 'Что-то пошло не так'));
   }
   return (
     <div onSubmit={handleSubmit} className="login">
