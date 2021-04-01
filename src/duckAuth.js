@@ -9,13 +9,7 @@ export const register = (username, password, email) => {
     },
     body: JSON.stringify({username, password, email})
   })
-  .then((response) => {
-    return response.json();
-  })
-  .then((res) => {
-    return res;
-  })
-  .catch((err) => console.log(err));
+  .then(checkResponse)
 };
 export const authorize = (identifier, password) => {
   return fetch(`${BASE_URL}/auth/local`, {
@@ -26,16 +20,7 @@ export const authorize = (identifier, password) => {
     },
     body: JSON.stringify({identifier, password})
   })
-  .then((response => response.json()))
-  .then((data) => {
-    if (data.user){
-      localStorage.setItem('jwt', data.jwt);
-      return data;
-    } else {
-      return;
-    }
-  })
-  .catch(err => console.log(err))
+  .then(checkResponse)
 };
 export const getContent = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
@@ -46,8 +31,8 @@ export const getContent = (token) => {
       'Authorization': `Bearer ${token}`,
     }
   })
-  .then(res => res.json())
-  .then(data => data)
+  .then(checkResponse)
 }
 
+const checkResponse = (res) => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.statusText}`)
 
